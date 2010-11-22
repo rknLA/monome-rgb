@@ -1,0 +1,13 @@
+eagle library containing:
+- rgb led (mouser part 743-HT-358FCH)
+- greyscale keypad footprint with rgb led
+
+the keypad footprint contains connector pads for the switch facing outward,
+as you might expect by looking at it, while the connector pads for the leds
+act more like vias.  connect to them on the bottom layer, or an internal
+layer, since there's no escaping the switch trace.
+
+
+--
+soundcyst 2010
+

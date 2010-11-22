@@ -8,6 +8,11 @@ act more like vias.  connect to them on the bottom layer, or an internal
 layer, since there's no escaping the switch trace.
 
 
+the mnm_rgb.lbr file is a derivative work of libraries created and owned by
+brian crabtree and monome.  it is released under cc by-sa, though it may be
+subject to a non-commercial clause as well.  contact tehn a monome d org
+for licensing inquiries
+
 --
 soundcyst 2010
 

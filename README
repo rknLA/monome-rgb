@@ -1,3 +1,21 @@
+the monome-rgb repository contains a few things for now:
+
+- an old design of a 2x4 button test.  this board was never produced, and may be
+  removed in the future.
+- an eagle library containing parts (described later)
+- arduino firmware to run the test board as a shield
+
+coming soon:
+- the eagle files for the 4 button, 2 knob test board.
+
+--------------------------------------------------------------------------------
+
+the test board's firmware interfaces with a custom version of libmonome (and in
+turn, serialosc) that can be found at http://github.com/soundcyst/libmonome
+
+
+--------------------------------------------------------------------------------
+
 eagle library containing:
 - rgb led (mouser part 743-HT-358FCH)
 - greyscale keypad footprint with rgb led
@@ -13,6 +31,7 @@ brian crabtree and monome.  it is released under cc by-sa, though it may be
 subject to a non-commercial clause as well.  contact tehn a monome d org
 for licensing inquiries
 
+
 --
-soundcyst 2010
+soundcyst 2011
 

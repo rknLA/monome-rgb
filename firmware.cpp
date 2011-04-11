@@ -1,3 +1,6 @@
+/* NOTE!! this is currently untested and should be considered a
+   work in progress.  treat it accordingly. */
+
 /* based heavily on the monome series firmware */
 
 /* serial protocol */

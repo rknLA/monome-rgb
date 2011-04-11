@@ -4,9 +4,7 @@ the monome-rgb repository contains a few things for now:
   removed in the future.
 - an eagle library containing parts (described later)
 - arduino firmware to run the test board as a shield
-
-coming soon:
-- the eagle files for the 4 button, 2 knob test board.
+- the eagle files for the 4 button, 2 knob test board (arduino shield)
 
 --------------------------------------------------------------------------------
 
@@ -25,6 +23,8 @@ as you might expect by looking at it, while the connector pads for the leds
 act more like vias.  connect to them on the bottom layer, or an internal
 layer, since there's no escaping the switch trace.
 
+you'll probably also want the Sparkfun library if you want to hack on this
+without making your own parts.
 
 the mnm_rgb.lbr file is a derivative work of libraries created and owned by
 brian crabtree and monome.  it is released under cc by-sa, though it may be

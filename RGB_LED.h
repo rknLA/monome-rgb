@@ -1,10 +1,13 @@
 /* rgb led abstraction */
 
+#include "WProgram.h"
+
 #ifndef __RGB_LED_H__
 #define __RGB_LED_H__
 
 class RGB_LED
 {
+private:
     byte red;
     byte green;
     byte blue;
@@ -17,6 +20,7 @@ class RGB_LED
 
     byte state;
 
+public:
     void setColor(long rgb);
 
     void setColor(byte r, byte g, byte b);
@@ -28,7 +32,7 @@ class RGB_LED
     void off(void);
 
     void setState(int s);
-}
+};
 
 #endif /* __RGB_LED_H__ */
 

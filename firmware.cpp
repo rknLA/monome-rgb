@@ -61,7 +61,7 @@ byte rx_count;    /* number of bytes received */
 byte rx_length;   /* length of current message */
 byte rx_type;     /* type of current message */
 byte rx_timeout;  /* timeout counter */
-byte rx_buf[16];  /* receive buffer */
+byte rx[16];      /* receive buffer */
 
 /* not all of these are used, but it's more convenient to use the #defines as indices */
 byte packet_length[16];
@@ -92,10 +92,10 @@ void initializeHardware()
   pinMode(PIN_BTN3, INPUT);
 
 
-  led[0].setPins(PIN_LED0_R, PIN_LED0_G, PIN_LED0_B);
-  led[1].setPins(PIN_LED1_R, PIN_LED1_G, PIN_LED1_B);
-  led[2].setPins(PIN_LED2_R, PIN_LED2_G, PIN_LED2_B);
-  led[3].setPins(PIN_LED3_R, PIN_LED3_G, PIN_LED3_B);
+  led[0].assignPins(PIN_LED0_R, PIN_LED0_G, PIN_LED0_B);
+  led[1].assignPins(PIN_LED1_R, PIN_LED1_G, PIN_LED1_B);
+  led[2].assignPins(PIN_LED2_R, PIN_LED2_G, PIN_LED2_B);
+  led[3].assignPins(PIN_LED3_R, PIN_LED3_G, PIN_LED3_B);
 
   for (int i = 0; i < 4; ++i)
   {
@@ -133,7 +133,7 @@ void setup()
   packet_length[LEDROW]   = 2;
   packet_length[CLEAR]    = 1;
   packet_length[MODE]     = 1;
-  packet_length[COLOL]    = 5;
+  packet_length[COLOR]    = 5;
 
   rx_count = rx_type = rx_timeout = 0;
   rx_length = 1;
@@ -161,7 +161,7 @@ void loop()
   if (Serial.available())
   {
     //read the serial byte
-    rx[rx_count] = Serial.read(1);
+    rx[rx_count] = Serial.read();
 
     //do start-of-message checking
     if (rx_count == 0)
@@ -219,7 +219,7 @@ void loop()
         red = rx[2];
         green = rx[3];
         blue = rx[4];
-        handle_ledColor(x, y, red, green, blue);
+        handle_Color(x, y, red, green, blue);
         break;
       default:
         //not really anything to do, huh?

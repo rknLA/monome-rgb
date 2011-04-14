@@ -105,7 +105,7 @@ void initializeHardware()
 
   long colorShifts[12] = {0,0,0,0,0xFF0000, 0x00FF00, 0x0000FF, 0xFFFFFF, 0, 0, 0, 0};
 
-  for (int i = 4; i < 8; ++i)
+  for (int i = 4; i < 12; ++i)
   {
     led[0].setColor(colorShifts[i]);
     led[1].setColor(colorShifts[i-1]);
@@ -119,6 +119,8 @@ void initializeHardware()
     led[i].setColor(0);
     led[i].off();
   }
+
+  Serial.begin(115200);
   
 
 }

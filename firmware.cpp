@@ -1,6 +1,8 @@
 /* NOTE!! this is currently untested and should be considered a
    work in progress.  treat it accordingly. */
 
+#include "RGB_LED.h"
+
 /* based heavily on the monome series firmware */
 
 /* serial protocol */
@@ -17,9 +19,33 @@
 #define MODE        (0xB)
 #define COLOR       (0xF)
 
-class RGB_LED;
 
-class RGB_LED_nopwm;
+
+/* pins */
+#define PIN_LED0_R      (2)
+#define PIN_LED0_G      (4)
+#define PIN_LED0_B      (7)
+
+#define PIN_LED1_R      (3)
+#define PIN_LED1_G      (5)
+#define PIN_LED1_B      (6)
+
+#define PIN_LED2_R      (9)
+#define PIN_LED2_G      (10)
+#define PIN_LED2_B      (11)
+
+#define PIN_LED3_R      (8)
+#define PIN_LED3_G      (12)
+#define PIN_LED3_B      (13)
+
+#define PIN_BTN0        (A5)
+#define PIN_BTN1        (A3)
+#define PIN_BTN2        (A2)
+#define PIN_BTN3        (A1)
+
+#define PIN_KNOB0       (A0)
+#define PIN_KNOB1       (A4)
+
 
 
 void handle_ledOn(int x, int y);
@@ -29,6 +55,7 @@ void handle_color(int x, int y, byte r, byte g, byte b);
 void handle_clear(byte flag);
 void handle_mode(byte mode);
 
+RGB_LED led[4];
 
 byte rx_count;    /* number of bytes received */
 byte rx_length;   /* length of current message */
@@ -53,9 +80,47 @@ bool opcodeValid(byte opcode)
           (opcode == COLOR));
 }
 
+
+
 void initializeHardware()
 {
   /* do hardware init stuff TODO */
+
+  pinMode(PIN_BTN0, INPUT);
+  pinMode(PIN_BTN1, INPUT);
+  pinMode(PIN_BTN2, INPUT);
+  pinMode(PIN_BTN3, INPUT);
+
+
+  led[0].setPins(PIN_LED0_R, PIN_LED0_G, PIN_LED0_B);
+  led[1].setPins(PIN_LED1_R, PIN_LED1_G, PIN_LED1_B);
+  led[2].setPins(PIN_LED2_R, PIN_LED2_G, PIN_LED2_B);
+  led[3].setPins(PIN_LED3_R, PIN_LED3_G, PIN_LED3_B);
+
+  for (int i = 0; i < 4; ++i)
+  {
+    led[i].setColor(0);
+    led[i].on();
+  }
+
+  long colorShifts[12] = {0,0,0,0,0xFF0000, 0x00FF00, 0x0000FF, 0xFFFFFF, 0, 0, 0, 0};
+
+  for (int i = 4; i < 8; ++i)
+  {
+    led[0].setColor(colorShifts[i]);
+    led[1].setColor(colorShifts[i-1]);
+    led[2].setColor(colorShifts[i-2]);
+    led[3].setColor(colorShifts[i-3]);
+    delay(250);
+  }
+
+  for (int i = 0; i < 4; ++i)
+  {
+    led[i].setColor(0);
+    led[i].off();
+  }
+  
+
 }
 
 
@@ -75,6 +140,14 @@ void setup()
 
   initializeHardware();
 }
+
+
+byte lastBtnState[4] = {0};
+byte currBtnState[4] = {0};
+byte newBtnState[4] = {0};
+
+byte lastADC[2] = {0};
+byte currADC[2] = {0};
 
 void loop()
 {
@@ -158,10 +231,48 @@ void loop()
 
 
   /* handle button presses */
+
+  newBtnState[0] = digitalRead(PIN_BTN0);
+  newBtnState[1] = digitalRead(PIN_BTN1);
+  newBtnState[2] = digitalRead(PIN_BTN2);
+  newBtnState[3] = digitalRead(PIN_BTN3);
+
   for (int i = 0; i < 4; ++i)
   {
-    btn_state[i] = digitalRead(btn_pin[i]);
+    if (newBtnState[i] == currBtnState[i] &&
+        currBtnState[i] != lastBtnState[i])
+    {
+      if (newBtnState[i])
+      {
+        //press
+        byte coord = i << 4;
+        Serial.print((byte)KEYDOWN);
+        Serial.print(coord);
+      } else {
+        //release
+        byte coord = i << 4;
+        Serial.print((byte)KEYUP);
+        Serial.print(coord);
+      }
 
+    }
+
+  }
+
+  /* handle adcs */
+  currADC[0] = (analogRead(PIN_KNOB0) >> 2);
+  currADC[1] = (analogRead(PIN_KNOB1) >> 2);
+
+  for (int i = 0; i < 2; ++i)
+  {
+    if (currADC[i] != lastADC[i])
+    {
+      //send ADC message
+      byte first = KNOB | i;
+      byte second = currADC[i];
+      Serial.print(first);
+      Serial.print(second);
+    }
   }
 
     
@@ -169,3 +280,60 @@ void loop()
   
 
   
+
+
+void handle_ledOn(int x, int y)
+{
+  //ignore y since we only gots 1 row!
+  led[x].on();
+}
+
+void handle_ledOff(int x, int y)
+{
+  //ignore y since we only gots 1 row!
+  led[x].off();
+}
+
+void handle_ledRow(int y, byte mask)
+{
+  //ignoring y...
+  for (int i = 0; i < 4; ++i)
+  {
+    if ((mask >> i) & 0x01)
+    {
+      led[i].on();
+    } else {
+      led[i].off();
+    }
+  }
+}
+
+void handle_color(int x, int y, byte r, byte g, byte b)
+{
+  //ignore y
+  led[x].setColor(r,g,b);
+}
+
+void handle_clear(byte flag)
+{
+  if (flag)
+  {
+    for(int i = 0; i < 4; ++i)
+    {
+      led[i].on();
+    }
+  } else {
+    for(int i = 0; i < 4; ++i)
+    {
+      led[i].off();
+    }
+  }
+
+}
+
+
+void handle_mode(byte mode)
+{
+
+}
+
